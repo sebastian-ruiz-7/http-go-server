@@ -1,15 +1,17 @@
 package http
 
 import (
-	http "net/http"
+	"net/http"
 
-	userRoute "github.com/sebastian-ruiz-7/http-go-server/internal/user/insfrastructure/http"
+	playersRoutes "github.com/sebastian-ruiz-7/http-go-server/internal/players/infrastructure/rest"
+	teamsRoutes "github.com/sebastian-ruiz-7/http-go-server/internal/teams/infrastructure/rest"
 )
 
 func NewRouter() *http.ServeMux {
 	mux := http.NewServeMux()
 
-	userRoute.RegisterRoutes(mux)
+	playersRoutes.RegisterRoutes(mux)
+	teamsRoutes.RegisterRoutes(mux)
 
 	return mux
 }
