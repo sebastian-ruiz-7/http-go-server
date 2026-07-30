@@ -1,25 +1,30 @@
 package application
 
 import (
-	"encoding/json"
 	"fmt"
+
+	userDomain "github.com/sebastian-ruiz-7/http-go-server/internal/players/domain"
 )
 
-type Player struct {
-	Name string `json:"name" binding:"required"`
-	Age  int    `json:"age"`
+// interfaz
+type CreatePlayerUseCase interface {
+	CreatePlayer(player userDomain.Player) error
 }
 
-func CreatePlayerUseCase(body []byte) {
-	//trying deserializing json
+// Puerto de salida
+type IDGenerator interface {
+	NewId() string
+}
 
-	var player Player
+// Inyección de dependencia del IDs
+type CreatePlayerService struct {
+	ids IDGenerator
+}
 
-	err := json.Unmarshal(body, &player)
+func NewCreatePlayerService(ids IDGenerator) *CreatePlayerService {
+	return &CreatePlayerService{ids: ids}
+}
 
-	if err != nil {
-		fmt.Println("error pa")
-	}
-
-	fmt.Println("body service", player.Name)
+func CreatePlayer(player userDomain.Player) {
+	fmt.Println("player", player)
 }
