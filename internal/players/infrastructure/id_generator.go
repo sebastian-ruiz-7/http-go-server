@@ -1,8 +1,9 @@
 package infrastructure
 
+import "github.com/google/uuid"
+
 type UUIDGenerator struct{}
 
 func (UUIDGenerator) NewID() string {
-
-	return "asdf"
+	return uuid.NewString()
 }

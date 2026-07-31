@@ -16,39 +16,6 @@ type createPlayer struct {
 	Age  int    `json:"age"`
 }
 
-// type CreatePlayerHandler struct {
-// 	useCase application.CreatePlayerUseCase
-// }
-
-// func NewCreatePlayerHandler(uc application.CreatePlayerUseCase) *CreatePlayerHandler {
-// 	return &CreatePlayerHandler{useCase: uc}
-// }
-
-// func CreatePlayerHttpHandler(w http.ResponseWriter, r *http.Request) {
-// 	message := []byte("creating a player")
-
-// 	playerJson, err := createPlayerHttpAdapter(r.Body)
-
-// 	if err != nil {
-// 		responseHttpError(w, err.Error(), http.StatusBadRequest)
-// 		return
-// 	}
-
-// 	parseData(&playerJson)
-
-// 	//Vali
-// 	// err = validateData(playerJson)
-
-// 	// if err != nil {
-// 	// 	responseHttpError(w, err.Error(), http.StatusBadRequest)
-// 	// 	return
-// 	// }
-
-// 	fmt.Println("player json", playerJson)
-
-// 	w.Write(message)
-// }
-
 func createPlayerHttpAdapter(body io.Reader) (application.CreatePlayerInput, error) {
 	var playerJson createPlayer
 
@@ -83,19 +50,6 @@ func createPlayerHttpAdapter(body io.Reader) (application.CreatePlayerInput, err
 	return playerData, nil
 }
 
-// func parseData(data *createPlayer) {
-// 	data.Name = strings.TrimSpace(data.Name)
-// }
-
-// func responseHttpError(w http.ResponseWriter, msg string, httpError int) {
-// 	w.Header().Set("content-type", "application/json")
-// 	w.WriteHeader(httpError)
-
-// 	_ = json.NewEncoder(w).Encode(map[string]string{
-// 		"message": msg,
-// 	})
-// }
-
 type CreatePlayerHandler struct {
 	useCase application.CreatePlayerUseCase
 }
@@ -105,6 +59,28 @@ func NewCreatePlayerHandler(useCase application.CreatePlayerUseCase) *CreatePlay
 }
 
 func (handler CreatePlayerHandler) CreatePlayerHttpHandler(w http.ResponseWriter, r *http.Request) {
-	data, _ := createPlayerHttpAdapter(r.Body)
-	handler.useCase.Execute(data)
+	data, err := createPlayerHttpAdapter(r.Body)
+
+	if err != nil {
+		responseWriter(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err = handler.useCase.Execute(data)
+
+	if err != nil {
+		responseWriter(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+}
+
+func responseWriter(w http.ResponseWriter, message string, httpStatus int) {
+	w.Header().Set("Content-Type", "application/json")
+
+	msg := map[string]string{"message": message}
+	jsonData, _ := json.Marshal(msg)
+
+	w.WriteHeader(httpStatus)
+	w.Write(jsonData)
 }

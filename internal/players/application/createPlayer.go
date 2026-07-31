@@ -1,41 +1,17 @@
 package application
 
 import (
-	"fmt"
-
 	"github.com/sebastian-ruiz-7/http-go-server/internal/players/domain"
 	userDomain "github.com/sebastian-ruiz-7/http-go-server/internal/players/domain"
 )
 
-// interfaz
-// type CreatePlayerUseCase interface {
-// 	CreatePlayer(player userDomain.Player) error
-// }
-
-// // Puerto de salida
-// type IDGenerator interface {
-// 	NewId() string
-// }
-
-// // Inyección de dependencia del IDs
-// type CreatePlayerService struct {
-// 	ids IDGenerator
-// }
-
-// func NewCreatePlayerService(ids IDGenerator) *CreatePlayerService {
-// 	return &CreatePlayerService{ids: ids}
-// }
-
-// func CreatePlayer(player userDomain.Player) {
-// 	fmt.Println("player", player)
-// }
-
 type CreatePlayerService struct {
-	ids userDomain.IDGenerator
+	ids  userDomain.IDGenerator
+	repo userDomain.PlayerRepository
 }
 
-func NewCreatePlayerService(ids userDomain.IDGenerator) *CreatePlayerService {
-	return &CreatePlayerService{ids: ids}
+func NewCreatePlayerService(ids userDomain.IDGenerator, repo userDomain.PlayerRepository) *CreatePlayerService {
+	return &CreatePlayerService{ids: ids, repo: repo}
 }
 
 type CreatePlayerInput struct {
@@ -48,11 +24,19 @@ type CreatePlayerUseCase interface {
 }
 
 func (us *CreatePlayerService) Execute(inputData CreatePlayerInput) error {
-	fmt.Println("entro")
-	id := us.ids.NewID()
+	playerData := domain.Player{ID: us.ids.NewID(), Name: inputData.Name, Age: inputData.Age}
 
-	playerData := domain.Player{ID: id, Name: inputData.Name, Age: inputData.Age}
+	err := domain.CreatePlayer(playerData)
 
-	domain.CreatePlayer(playerData)
+	if err != nil {
+		return err
+	}
+
+	err = us.repo.Save(playerData)
+
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

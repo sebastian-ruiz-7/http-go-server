@@ -2,7 +2,7 @@ package domain
 
 import "errors"
 
-func ValidateDataForCreatePlayer(player Player) error {
+func validateDataForCreatePlayer(player Player) error {
 	if len(player.Name) == 0 {
 		return errors.New("Name can't be empty")
 	}
