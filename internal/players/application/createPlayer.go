@@ -1,28 +1,58 @@
 package application
 
 import (
-	"encoding/json"
 	"fmt"
-	"strings"
 
-	playersDomain "github.com/sebastian-ruiz-7/http-go-server/internal/players/domain"
+	"github.com/sebastian-ruiz-7/http-go-server/internal/players/domain"
+	userDomain "github.com/sebastian-ruiz-7/http-go-server/internal/players/domain"
 )
 
-func CreatePlayerUseCase(body []byte) {
-	//trying deserializing json
+// interfaz
+// type CreatePlayerUseCase interface {
+// 	CreatePlayer(player userDomain.Player) error
+// }
 
-	var player playersDomain.Player
+// // Puerto de salida
+// type IDGenerator interface {
+// 	NewId() string
+// }
 
-	err := json.Unmarshal(body, &player)
+// // Inyección de dependencia del IDs
+// type CreatePlayerService struct {
+// 	ids IDGenerator
+// }
 
-	// fmt.Println("err", err)
+// func NewCreatePlayerService(ids IDGenerator) *CreatePlayerService {
+// 	return &CreatePlayerService{ids: ids}
+// }
 
-	if err != nil {
-		fmt.Println("error pa")
-	}
+// func CreatePlayer(player userDomain.Player) {
+// 	fmt.Println("player", player)
+// }
 
-	fmt.Println("longitud", len(player.Name))
-	player.Name = strings.TrimSpace(player.Name)
+type CreatePlayerService struct {
+	ids userDomain.IDGenerator
+}
 
-	fmt.Println("edad", player.Age)
+func NewCreatePlayerService(ids userDomain.IDGenerator) *CreatePlayerService {
+	return &CreatePlayerService{ids: ids}
+}
+
+type CreatePlayerInput struct {
+	Name string
+	Age  int
+}
+
+type CreatePlayerUseCase interface {
+	Execute(inputData CreatePlayerInput) error
+}
+
+func (us *CreatePlayerService) Execute(inputData CreatePlayerInput) error {
+	fmt.Println("entro")
+	id := us.ids.NewID()
+
+	playerData := domain.Player{ID: id, Name: inputData.Name, Age: inputData.Age}
+
+	domain.CreatePlayer(playerData)
+	return nil
 }

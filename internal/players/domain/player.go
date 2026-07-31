@@ -1,20 +1,15 @@
 package domain
 
-import (
-	"strings"
-)
+import "fmt"
 
 type Player struct {
-	Name string `json:"name"`
-	Age  int    `json:"age"`
+	ID   string
+	Name string
+	Age  int
 }
 
-func ValidatePlayerData(player Player) error {
-	return nil
-}
-
-func ParsePlayerData(player *Player) {
-	player.Name = strings.TrimSpace(player.Name)
-	// player.Age=number.
-
+func CreatePlayer(player Player) {
+	fmt.Println("ID", player.ID)
+	fmt.Println("Name", player.Name)
+	fmt.Println("Age", player.Age)
 }

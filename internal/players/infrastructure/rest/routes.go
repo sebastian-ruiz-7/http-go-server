@@ -7,6 +7,8 @@ import (
 const prefix = "/players"
 
 func RegisterRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("POST "+prefix+"/create", CreatePlayerHttpHandler)
+	createPlayerContainer := NewContainer()
+
+	mux.HandleFunc("POST "+prefix+"/create", createPlayerContainer.CreateHandler.CreatePlayerHttpHandler)
 	mux.HandleFunc(prefix+"/get", GetPlayerByIdHttpHandler)
 }
